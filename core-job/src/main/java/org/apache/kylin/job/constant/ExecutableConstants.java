@@ -95,4 +95,6 @@ public final class ExecutableConstants {
     //kylin on parquetv2
     public static final String STEP_NAME_DETECT_RESOURCE = "Detect Resource";
 
+    public static final String STEP_NAME_SAMPLE_TABLE = "Sample Table";
+
 }

@@ -40,6 +40,8 @@ public interface IBatchCubingEngine {
     /** Optimize a segment based on the cuboid recommend list produced by the cube planner. */
     public DefaultChainedExecutable createBatchOptimizeJob(CubeSegment optimizeSegment, String submitter);
 
+    public DefaultChainedExecutable createSampleTableJob(String project, String submitter, long maxSampleCount, String tableName);
+
     public Class<?> getSourceInterface();
 
     public Class<?> getStorageInterface();

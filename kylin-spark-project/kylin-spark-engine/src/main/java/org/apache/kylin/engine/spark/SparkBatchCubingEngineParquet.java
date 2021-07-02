@@ -18,11 +18,12 @@
 
 package org.apache.kylin.engine.spark;
 
-import org.apache.kylin.engine.spark.job.NSparkCubingJob;
 import org.apache.kylin.cube.CubeSegment;
 import org.apache.kylin.cube.model.CubeDesc;
 import org.apache.kylin.engine.IBatchCubingEngine;
+import org.apache.kylin.engine.spark.job.NSparkCubingJob;
 import org.apache.kylin.engine.spark.job.NSparkMergingJob;
+import org.apache.kylin.engine.spark.job.NSparkTableExtSampleJob;
 import org.apache.kylin.job.execution.DefaultChainedExecutable;
 import org.apache.kylin.metadata.model.IJoinedFlatTableDesc;
 import org.spark_project.guava.collect.Sets;
@@ -51,6 +52,12 @@ public class SparkBatchCubingEngineParquet implements IBatchCubingEngine {
     @Override
     public DefaultChainedExecutable createBatchOptimizeJob(CubeSegment optimizeSegment, String submitter) {
         return null;
+    }
+
+    @Override
+    public DefaultChainedExecutable createSampleTableJob(String project, String submitter, long maxSampleCount,
+            String tableName) {
+        return NSparkTableExtSampleJob.create(project, submitter, maxSampleCount, tableName);
     }
 
     @Override

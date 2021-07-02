@@ -33,7 +33,6 @@ import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kylin.common.KylinConfig;
 import org.apache.kylin.common.lock.DistributedLock;
@@ -66,8 +65,8 @@ import org.apache.kylin.job.exception.SchedulerException;
 import org.apache.kylin.job.execution.AbstractExecutable;
 import org.apache.kylin.job.execution.CheckpointExecutable;
 import org.apache.kylin.job.execution.DefaultChainedExecutable;
-import org.apache.kylin.job.execution.ExecutableState;
 import org.apache.kylin.job.execution.ExecutableManager;
+import org.apache.kylin.job.execution.ExecutableState;
 import org.apache.kylin.job.execution.Output;
 import org.apache.kylin.job.lock.zookeeper.ZookeeperJobLock;
 import org.apache.kylin.metadata.model.ISourceAware;
@@ -80,6 +79,12 @@ import org.apache.kylin.rest.exception.BadRequestException;
 import org.apache.kylin.rest.msg.Message;
 import org.apache.kylin.rest.msg.MsgPicker;
 import org.apache.kylin.rest.util.AclEvaluate;
+import org.apache.kylin.shaded.com.google.common.base.Function;
+import org.apache.kylin.shaded.com.google.common.base.Predicate;
+import org.apache.kylin.shaded.com.google.common.base.Predicates;
+import org.apache.kylin.shaded.com.google.common.collect.FluentIterable;
+import org.apache.kylin.shaded.com.google.common.collect.Lists;
+import org.apache.kylin.shaded.com.google.common.collect.Sets;
 import org.apache.kylin.source.ISource;
 import org.apache.kylin.source.SourceManager;
 import org.apache.kylin.source.SourcePartition;
@@ -91,12 +96,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import org.apache.kylin.shaded.com.google.common.base.Function;
-import org.apache.kylin.shaded.com.google.common.base.Predicate;
-import org.apache.kylin.shaded.com.google.common.base.Predicates;
-import org.apache.kylin.shaded.com.google.common.collect.FluentIterable;
-import org.apache.kylin.shaded.com.google.common.collect.Lists;
-import org.apache.kylin.shaded.com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 
 /**
  * @author ysong1
@@ -1370,6 +1370,14 @@ public class JobService extends BasicService implements InitializingBean {
 
     public List<CubingJob> listJobsByRealizationName(final String realizationName, final String projectName) {
         return listJobsByRealizationName(realizationName, projectName, EnumSet.allOf(ExecutableState.class));
+    }
+
+    public String submitSampleTableJob(String project, String submitter, long maxSampleCount, String tableName) {
+        aclEvaluate.checkProjectOperationPermission(project);
+        DefaultChainedExecutable job = EngineFactory.createSampleTableJob(project, submitter, maxSampleCount,
+                tableName);
+        getExecutableManager().addJob(job);
+        return job.getId();
     }
 
     public enum JobSearchMode {

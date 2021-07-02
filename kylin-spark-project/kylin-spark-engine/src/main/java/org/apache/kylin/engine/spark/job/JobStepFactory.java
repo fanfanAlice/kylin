@@ -56,4 +56,19 @@ public class JobStepFactory {
         step.setDistMetaUrl(config.getJobTmpMetaStoreUrl(parent.getProject(), step.getId()));
         return step;
     }
+
+    //TODO other type sample
+    public static NSparkExecutable addStep(DefaultChainedExecutable parent, JobStepType type, KylinConfig config) {
+        NSparkExecutable step;
+        if (type == JobStepType.TABLE_SAMPLE_HIVE) {
+            step = new NSparkSampleTableStep(config.getSparkSampleTableClassName());
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+        step.setParams(parent.getParams());
+        step.setProject(parent.getProject());
+        parent.addTask(step);
+        return step;
+    }
 }
